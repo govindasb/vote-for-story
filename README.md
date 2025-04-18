@@ -25,3 +25,41 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+
+## Future Work
+
+📋 Vote for Story App – Feature TODOs
+🎯 User Experience Enhancements
+ Show loading spinner while syncing session data
+
+ Display “voted” status next to each user (e.g., ✅ or 🕒 before reveal)
+
+ Animate votes when they are revealed
+
+ Make layout responsive for mobile and tablet
+
+ Add a dark mode toggle (optional)
+
+🧠 Smart Voting Features
+ Add voting timer to auto-reveal or auto-clear after X seconds
+
+ Auto-reset voting round after a reveal (e.g., 10 seconds)
+
+ Allow session creator to enter a story title per vote
+
+ Display vote statistics (average, mode, etc.) after reveal
+
+🔒 Stability & Cleanup
+ Prevent users from voting more than once per round
+
+ Add “Leave Session” button to allow user to exit
+
+ Auto-delete stale sessions (e.g., no activity for 1 hour)
+
+🚀 Deployment & DevOps
+ Set up GitHub Actions for CI/CD deployment to Firebase
+
+ Add unit tests for components and services (Jasmine + Karma)
+
+ Create invite/share link with name pre-filled (/session/:id?name=Govind)
