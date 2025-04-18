@@ -1,0 +1,33 @@
+<div class="flex flex-col items-center justify-center h-screen px-4 gap-6">
+    <h1 class="text-3xl font-bold">Vote for Story</h1>
+  
+    <input
+      [(ngModel)]="name"
+      placeholder="Enter your name"
+      class="border p-2 rounded w-full max-w-sm"
+      type="text"
+    />
+  
+    <button
+      (click)="createSession()"
+      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full max-w-sm"
+    >
+      Create Session
+    </button>
+  
+    <div class="flex flex-col gap-2 w-full max-w-sm">
+      <input
+        [(ngModel)]="sessionId"
+        placeholder="Enter Session ID"
+        class="border p-2 rounded"
+        type="text"
+      />
+      <button
+        (click)="joinSession()"
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+      >
+        Join Session
+      </button>
+    </div>
+  </div>
+  
