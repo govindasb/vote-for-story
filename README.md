@@ -25,3 +25,13 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+
+##ToDo
+
+1. Make Create and Join segments into Two Individual Blocks or section and user should enter while joining through that block.
+
+2. Outlier highlighting when someone vote greate than mean vote of others
+
+3. End Session upOn clicking
+
