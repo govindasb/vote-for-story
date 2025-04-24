@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { tap } from 'rxjs';
 import { SessionService } from 'src/app/services/session.service';
+import { Vote } from 'src/app/types/vote';
+import { VoteFrequency } from 'src/app/types/vote-frequency';
 
 @Component({
   selector: 'app-session',
   templateUrl: './session.component.html',
-  styleUrls: ['./session.component.css']
+  styleUrls: ['./session.component.css'],
 })
 export class SessionComponent implements OnInit {
   sessionId: string = '';
@@ -13,7 +16,7 @@ export class SessionComponent implements OnInit {
 
   userName = '';
   users: string[] = [];
-  votes: Record<string, string> = {};
+  votes$ = this.sessionService.votes$;
   revealed = false;
 
   constructor(
@@ -24,12 +27,10 @@ export class SessionComponent implements OnInit {
   ngOnInit(): void {
     this.sessionId = this.route.snapshot.paramMap.get('id') || '';
     this.sessionService.setSessionId(this.sessionId);
-    this.sessionService.userName$.subscribe(name => this.userName = name);
-    this.sessionService.users$.subscribe(users => this.users = users);
-    this.sessionService.votes$.subscribe(votes => this.votes = votes);
-    this.sessionService.revealed$.subscribe(flag => this.revealed = flag);
+    this.sessionService.userName$.subscribe((name) => (this.userName = name));
+    this.sessionService.revealed$.subscribe((flag) => (this.revealed = flag));
     this.sessionId = this.route.snapshot.paramMap.get('id') || '';
-      
+    this.votes$.pipe(tap((data) => console.log(data)));
   }
 
   vote(value: string) {
@@ -44,8 +45,22 @@ export class SessionComponent implements OnInit {
     this.sessionService.clearVotes();
   }
 
-  getVoteForUser(user: string): string {
-    if (this.revealed) return this.votes[user] || '-';
-    return user === this.userName && this.votes[user] ? '✔️' : '⏳';
+
+  getVoteFrequencies(votes: Vote[]): VoteFrequency[] {
+    const voteMap = new Map<string, number>();
+
+  votes.forEach((v) => {
+    if (v.value) {
+      voteMap.set(v.value, (voteMap.get(v.value) || 0) + 1);
+    }
+  });
+
+  const maxCount = Math.max(...voteMap.values(), 0);
+
+  return Array.from(voteMap.entries()).map(([vote, count]) => ({
+    vote,
+    count,
+    isHighest: count === maxCount,
+  }));
   }
 }

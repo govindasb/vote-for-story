@@ -1,46 +1,78 @@
 <div class="p-6 flex flex-col items-center gap-6 min-h-screen bg-gray-50">
-    <h2 class="text-2xl font-semibold">Session: {{ sessionId }}</h2>
-  
-    <div class="text-lg">Welcome, <span class="font-bold">{{ userName }}</span> 👋</div>
-  
-    <!-- Users List -->
-    <div class="w-full max-w-md border rounded p-4 bg-white shadow">
-      <h3 class="font-medium mb-2">Users in session:</h3>
-      <ul class="space-y-1">
-        <li *ngFor="let user of users" class="flex justify-between">
-          <span>{{ user }}</span>
-          <span class="font-mono">
-            {{ getVoteForUser(user) }}
-          </span>
-        </li>
-      </ul>
-    </div>
-  
-    <!-- Vote Buttons -->
-    <div class="flex flex-wrap gap-3 justify-center max-w-xl">
-      <button
-        *ngFor="let value of voteValues"
-        (click)="vote(value)"
-        class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+  <h2 class="text-2xl font-semibold">Session: {{ sessionId }}</h2>
+
+  <div
+    *ngIf="revealed && (votes$ | async) as Votes"
+    [ngClass]="{'hidden': !getVoteFrequencies(Votes).length}"
+    class="mt-6 w-full max-w-md bg-white p-4 rounded shadow"
+  >
+    <h3 class="font-semibold mb-2">📊 Voting Summary</h3>
+    <ul class="divide-y">
+      <li class="py-1 flex justify-between">
+        <span class="font-bold">Points</span>
+        <span class="font-mono text-lg">Number of Votes</span>
+      </li>
+      <li
+        *ngFor="let item of getVoteFrequencies(Votes)"
+        [ngClass]="item.isHighest ? 'text-green-600 font-bold' : ''"
+        class="py-1 flex justify-between"
       >
-        {{ value }}
-      </button>
-    </div>
-  
-    <!-- Action Buttons -->
-    <div class="flex gap-4 mt-4">
-      <button
-        (click)="showVotes()"
-        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-      >
-        Show Votes
-      </button>
-      <button
-        (click)="clearVotes()"
-        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-      >
-        Clear All
-      </button>
-    </div>
+        <span>{{ item.vote }}</span>
+        <span>{{ item.count }}</span>
+      </li>
+    </ul>
   </div>
-  
+
+  <div class="text-lg">
+    Welcome, <span class="font-bold">{{ userName }}</span> 👋
+  </div>
+
+  <!-- Users List -->
+  <div class="w-full max-w-md border rounded p-4 bg-white shadow">
+    <h3 class="font-medium mb-2">Users in session:</h3>
+    <ul class="space-y-1" *ngIf="votes$ | async as Votes">
+      <li *ngFor="let voteInfo of Votes" class="flex justify-between">
+        <span>{{ voteInfo.userName }}</span>
+        <span class="font-mono text-lg">
+          <ng-container *ngIf="revealed; else status">
+            {{ voteInfo.value }}
+          </ng-container>
+          <ng-template #status>
+            <span
+              [ngClass]="voteInfo.value ? 'text-green-600' : 'text-gray-400'"
+            >
+                {{ voteInfo.value==='-' ? "🕒" : "✅" }}
+            </span>
+          </ng-template>
+        </span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Vote Buttons -->
+  <div class="flex flex-wrap gap-3 justify-center max-w-xl">
+    <button
+      *ngFor="let value of voteValues"
+      (click)="vote(value)"
+      class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+    >
+      {{ value }}
+    </button>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex gap-4 mt-4">
+    <button
+      (click)="showVotes()"
+      class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+    >
+      Show Votes
+    </button>
+    <button
+      (click)="clearVotes()"
+      class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+    >
+      Clear All
+    </button>
+  </div>
+</div>

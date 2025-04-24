@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase-config';
-
+import { SessionData } from '../types/session-data';
+import { Vote } from '../types/vote';
 @Injectable({
   providedIn: 'root',
 })
@@ -10,7 +11,7 @@ export class SessionService {
   private sessionId: string = '';
   private userName = new BehaviorSubject<string>('');
   private users = new BehaviorSubject<string[]>([]);
-  private votes = new BehaviorSubject<Record<string, string>>({});
+  private votes = new BehaviorSubject<Vote[]>([]);
   private revealed = new BehaviorSubject<boolean>(false);
 
   userName$ = this.userName.asObservable();
@@ -25,36 +26,46 @@ export class SessionService {
 
   setUserName(name: string) {
     this.userName.next(name);
-    this.addUserToSession(name);
+    const vote: Vote = { userName: name, value: '-' }; 
+    this.addUserToSession(vote);
   }
 
-  private async addUserToSession(name: string) {
-    if(!this.sessionId) {
-      return;
-    }
+  private async addUserToSession(vote: Vote) {
+    if (!this.sessionId) return;
     const sessionRef = doc(db, 'sessions', this.sessionId);
     const sessionSnap = await getDoc(sessionRef);
-
     if (!sessionSnap.exists()) {
-      await setDoc(sessionRef, {
-        users: [name],
-        votes: {},
-        revealed: false
-      });
+      const newVote: Vote = { userName: vote.userName, value: '-' };
+      const newSession: SessionData = {
+        users: [vote.userName],
+        votes: [newVote],
+        revealed: false,
+      };
+      await setDoc(sessionRef, newSession);
     } else {
-      const data = sessionSnap.data();
-      const updatedUsers = Array.from(new Set([...(data['users'] || []), name]));
-      await updateDoc(sessionRef, { users: updatedUsers });
+      const data = sessionSnap.data() as SessionData;
+      const updatedUsers = Array.from(new Set([...data.users, vote.userName]));
+      const updatedVotes = [...data.votes, vote];
+      await setDoc(sessionRef, {
+        users: updatedUsers,
+        votes: updatedVotes,
+        revealed: data.revealed,
+      });
     }
   }
 
   async castVote(name: string, vote: string) {
     const sessionRef = doc(db, 'sessions', this.sessionId);
     const sessionSnap = await getDoc(sessionRef);
-    const data = sessionSnap.data();
+    const data = sessionSnap.data() as SessionData;
 
-    const updatedVotes = { ...(data && data['votes'] ? data['votes'] : {}), [name]: vote };
-
+    const updatedVotes = data.votes ?? [];
+    const existingIndex = updatedVotes.findIndex((v) => v.userName === name);
+    if (existingIndex !== -1) {
+      updatedVotes[existingIndex].value = vote;
+    } else {
+      updatedVotes.push({ userName: name, value: vote });
+    }
     await updateDoc(sessionRef, { votes: updatedVotes });
   }
 
@@ -65,22 +76,37 @@ export class SessionService {
 
   async clearVotes() {
     const sessionRef = doc(db, 'sessions', this.sessionId);
+    const sessionSnap = await getDoc(sessionRef);
+    const data = sessionSnap.data() as SessionData;
+    const votes = data.votes.map((vote) => ({
+      ...vote,
+      vote: '-'
+    }));
     await updateDoc(sessionRef, {
-      votes: {},
-      revealed: false
+      votes: votes,
+      revealed: false,
     });
   }
 
   private startListening() {
+    if (!this.sessionId || this.sessionId.trim() === '') {
+      console.error('[SessionService] startListening: Missing sessionId');
+      return;
+    }
+
     const sessionRef = doc(db, 'sessions', this.sessionId);
 
     onSnapshot(sessionRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        this.users.next(data['users'] || []);
-        this.votes.next(data['votes'] || {});
-        this.revealed.next(data['revealed'] || false);
+      if (!docSnap.exists()) {
+        console.warn(
+          `[SessionService] session "${this.sessionId}" does not exist`
+        );
+        return;
       }
+      const data = docSnap.data() as SessionData;
+      this.users.next(data.users);
+      this.votes.next(data.votes || []);
+      this.revealed.next(data.revealed || false);
     });
   }
 }
