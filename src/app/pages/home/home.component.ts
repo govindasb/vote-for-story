@@ -10,6 +10,7 @@ import { SessionService } from 'src/app/services/session.service';
 export class HomeComponent {
   name = '';
   sessionId = '';
+  sessionName = '';
 
   constructor(
     private router: Router,
@@ -29,9 +30,9 @@ export class HomeComponent {
   }
 
   joinSession() {
-    if (!this.name.trim() || !this.sessionId.trim()) return;
+    if (!this.sessionName.trim() || !this.sessionId.trim()) return;
     this.sessionService.setSessionId(this.sessionId);
-    this.sessionService.setUserName(this.name);
+    this.sessionService.setUserName(this.sessionName);
     this.router.navigate(['/session', this.sessionId]);
   }
 }
