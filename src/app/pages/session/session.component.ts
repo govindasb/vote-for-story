@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs';
+import { API_URL } from 'src/app/constants/urls';
 import { SessionService } from 'src/app/services/session.service';
 import { Vote } from 'src/app/types/vote';
 import { VoteFrequency } from 'src/app/types/vote-frequency';
@@ -20,7 +21,7 @@ export class SessionComponent implements OnInit {
   revealed = false;
   sessionEnded = false;
   sessionEnded$ = this.sessionService.isSessionEnded$;
-
+  baseUrl = API_URL;
   constructor(
     private route: ActivatedRoute,
     private sessionService: SessionService,
@@ -86,5 +87,17 @@ export class SessionComponent implements OnInit {
 
   navigateTo(path: string) {
     this.router.navigate([path]);
+  }
+
+  sessionSharableLink(): string{
+    return `${this.baseUrl}/session/${this.sessionId}/join`;
+  }
+
+  copyShareLink() {
+    navigator.clipboard.writeText(this.sessionSharableLink()).then(() => {
+      alert('Session link copied to clipboard! ✅');
+    }).catch((err) => {
+      console.error('Could not copy link: ', err);
+    });
   }
 }
