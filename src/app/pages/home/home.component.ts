@@ -26,6 +26,7 @@ export class HomeComponent {
     const newSessionId = this.generateSessionId();
     this.sessionService.setSessionId(newSessionId);
     this.sessionService.setUserName(this.name);
+    this.sessionService.setSessionTitle('');
     this.router.navigate(['/session', newSessionId]);
   }
 

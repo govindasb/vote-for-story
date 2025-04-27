@@ -1,9 +1,12 @@
 <div class="flex flex-col items-center justify-center h-screen px-4 gap-6">
-    <h1 class="text-3xl font-bold">Vote for Story</h1>
-  
-    <div class="flex flex-row gap-4">
-      <div class="w-1/2 bg-white p-6 rounded-lg shadow-md flex flex-col justify-evenly">
-        <input
+  <h1 class="text-3xl font-bold">Vote for Story</h1>
+
+  <div class="flex flex-row gap-4">
+    <!-- Create Session -->
+    <div
+      class="w-1/2 bg-white p-6 rounded-lg shadow-md flex flex-col justify-evenly"
+    >
+      <input
         [(ngModel)]="name"
         placeholder="Enter your name"
         class="border p-2 rounded w-full max-w-sm"
@@ -15,33 +18,31 @@
       >
         Create Session
       </button>
-      </div>
-      
-    
-      <div class="w-1/2 bg-white p-6 rounded-lg shadow-md flex flex-col justify-evenly">
-        <div class="flex flex-col gap-2 w-full max-w-sm">
-          <input
+    </div>
+
+    <div
+      class="w-1/2 bg-white p-6 rounded-lg shadow-md flex flex-col justify-evenly"
+    >
+      <div class="flex flex-col gap-2 w-full max-w-sm">
+        <input
           [(ngModel)]="sessionName"
           placeholder="Enter your name"
           class="border p-2 rounded w-full max-w-sm"
           type="text"
         />
-          <input
-            [(ngModel)]="sessionId"
-            placeholder="Enter Session ID"
-            class="border p-2 rounded"
-            type="text"
-          />
-          <button
-            (click)="joinSession()"
-            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-          >
-            Join Session
-          </button>
-        </div>
+        <input
+          [(ngModel)]="sessionId"
+          placeholder="Enter Session ID"
+          class="border p-2 rounded"
+          type="text"
+        />
+        <button
+          (click)="joinSession()"
+          class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Join Session
+        </button>
       </div>
     </div>
-   
-    
   </div>
-  
+</div>

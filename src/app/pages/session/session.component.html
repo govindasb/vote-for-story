@@ -10,7 +10,20 @@
 <div class="p-6 flex flex-col items-center gap-6 min-h-screen bg-gray-50">
 
   <h2 class="text-2xl font-semibold">Session: {{ sessionId }}</h2>
-
+  <div class="w-full max-w-2xl bg-white p-4 rounded-lg shadow flex items-center gap-2">
+    <input 
+      type="text" 
+      [value]="sessionSharableLink()" 
+      readonly 
+      class="flex-1 border border-gray-300 rounded-md p-2 bg-gray-100 focus:outline-none"
+    />
+    <button 
+      (click)="copyShareLink()"
+      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+    >
+      Copy Link
+    </button>
+  </div>
   <div class="text-lg">
     Welcome, <span class="font-bold">{{ userName }}</span> 👋
   </div>

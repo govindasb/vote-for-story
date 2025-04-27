@@ -1,0 +1,1 @@
+export const API_URL = 'https://story-vote-app.web.app';

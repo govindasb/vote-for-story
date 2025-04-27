@@ -9,6 +9,7 @@ import { Vote } from '../types/vote';
 })
 export class SessionService {
   private sessionId: string = '';
+  private sessionTitle: string = '';
   private userName = new BehaviorSubject<string>('');
   private users = new BehaviorSubject<string[]>([]);
   private votes = new BehaviorSubject<Vote[]>([]);
@@ -33,6 +34,14 @@ export class SessionService {
     this.addUserToSession(vote);
   }
 
+  setSessionTitle(title: string) {
+    this.sessionTitle = title;
+  }
+
+  getSessionTitle(): string {
+    return this.sessionTitle;
+  }
+
   private async addUserToSession(vote: Vote) {
     if (!this.sessionId) return;
     const sessionRef = doc(db, 'sessions', this.sessionId);
@@ -40,6 +49,7 @@ export class SessionService {
     if (!sessionSnap.exists()) {
       const newVote: Vote = { userName: vote.userName, value: '-' };
       const newSession: SessionData = {
+        title: this.sessionTitle,
         users: [vote.userName],
         votes: [newVote],
         revealed: false,
@@ -125,5 +135,6 @@ export class SessionService {
     this.users.next([]);
     this.votes.next([]);
     this.revealed.next(false);
+    this.sessionWasActive = false;
   }
 }
