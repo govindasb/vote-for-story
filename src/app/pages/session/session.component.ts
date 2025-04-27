@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { SessionService } from 'src/app/services/session.service';
 import { Vote } from 'src/app/types/vote';
@@ -18,10 +18,13 @@ export class SessionComponent implements OnInit {
   users: string[] = [];
   votes$ = this.sessionService.votes$;
   revealed = false;
+  sessionEnded = false;
+  sessionEnded$ = this.sessionService.isSessionEnded$;
 
   constructor(
     private route: ActivatedRoute,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -30,7 +33,16 @@ export class SessionComponent implements OnInit {
     this.sessionService.userName$.subscribe((name) => (this.userName = name));
     this.sessionService.revealed$.subscribe((flag) => (this.revealed = flag));
     this.sessionId = this.route.snapshot.paramMap.get('id') || '';
-    this.votes$.pipe(tap((data) => console.log(data)));
+    this.sessionEnded$.subscribe((ended) => {
+      if (ended) {
+        this.sessionEnded = true;
+  
+        // Auto-redirect after 1 minute
+        setTimeout(() => {
+          this.router.navigate(['/']);
+        }, 60000); // 60,000 ms = 1 min
+      }
+    });
   }
 
   vote(value: string) {
@@ -46,22 +58,33 @@ export class SessionComponent implements OnInit {
     this.sessionService.clearVotes();
   }
 
-
   getVoteFrequencies(votes: Vote[]): VoteFrequency[] {
     const voteMap = new Map<string, number>();
 
-  votes.forEach((v) => {
-    if (v.value) {
-      voteMap.set(v.value, (voteMap.get(v.value) || 0) + 1);
+    votes.forEach((v) => {
+      if (v.value) {
+        voteMap.set(v.value, (voteMap.get(v.value) || 0) + 1);
+      }
+    });
+
+    const maxCount = Math.max(...voteMap.values(), 0);
+
+    return Array.from(voteMap.entries()).map(([vote, count]) => ({
+      vote,
+      count,
+      isHighest: count === maxCount,
+    }));
+  }
+
+  deleteSession() {
+    if (confirm('Are you sure you want to delete this session?')) {
+      this.sessionService.deleteSession().then(() => {
+        this.router.navigate(['/']);
+      });
     }
-  });
+  }
 
-  const maxCount = Math.max(...voteMap.values(), 0);
-
-  return Array.from(voteMap.entries()).map(([vote, count]) => ({
-    vote,
-    count,
-    isHighest: count === maxCount,
-  }));
+  navigateTo(path: string) {
+    this.router.navigate([path]);
   }
 }

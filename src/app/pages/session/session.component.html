@@ -1,4 +1,14 @@
+<div *ngIf="sessionEnded" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-center" role="alert">
+  <p>❌ This session has ended.</p>
+  <p>You will be redirected to Home automatically in 1 minute.</p>
+  <p class="mt-2">
+    <button (click)="navigateTo('/')" class="underline text-blue-600 hover:text-blue-800">
+      Click here to go Home now
+    </button>
+  </p>
+</div>
 <div class="p-6 flex flex-col items-center gap-6 min-h-screen bg-gray-50">
+
   <h2 class="text-2xl font-semibold">Session: {{ sessionId }}</h2>
 
   <div class="text-lg">
@@ -78,6 +88,12 @@
       class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
     >
       Clear All
+    </button>
+    <button
+      (click)="deleteSession()"
+      class="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800"
+    >
+      End Session
     </button>
   </div>
 </div>
