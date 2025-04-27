@@ -80,7 +80,7 @@ export class SessionService {
     const data = sessionSnap.data() as SessionData;
     const votes = data.votes.map((vote) => ({
       ...vote,
-      vote: '-'
+      value: '-'
     }));
     await updateDoc(sessionRef, {
       votes: votes,

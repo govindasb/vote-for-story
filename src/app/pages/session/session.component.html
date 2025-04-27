@@ -1,52 +1,57 @@
 <div class="p-6 flex flex-col items-center gap-6 min-h-screen bg-gray-50">
   <h2 class="text-2xl font-semibold">Session: {{ sessionId }}</h2>
 
-  <div
-    *ngIf="revealed && (votes$ | async) as Votes"
-    [ngClass]="{'hidden': !getVoteFrequencies(Votes).length}"
-    class="mt-6 w-full max-w-md bg-white p-4 rounded shadow"
-  >
-    <h3 class="font-semibold mb-2">📊 Voting Summary</h3>
-    <ul class="divide-y">
-      <li class="py-1 flex justify-between">
-        <span class="font-bold">Points</span>
-        <span class="font-mono text-lg">Number of Votes</span>
-      </li>
-      <li
-        *ngFor="let item of getVoteFrequencies(Votes)"
-        [ngClass]="item.isHighest ? 'text-green-600 font-bold' : ''"
-        class="py-1 flex justify-between"
-      >
-        <span>{{ item.vote }}</span>
-        <span>{{ item.count }}</span>
-      </li>
-    </ul>
-  </div>
-
   <div class="text-lg">
     Welcome, <span class="font-bold">{{ userName }}</span> 👋
   </div>
 
-  <!-- Users List -->
-  <div class="w-full max-w-md border rounded p-4 bg-white shadow">
-    <h3 class="font-medium mb-2">Users in session:</h3>
-    <ul class="space-y-1" *ngIf="votes$ | async as Votes">
-      <li *ngFor="let voteInfo of Votes" class="flex justify-between">
-        <span>{{ voteInfo.userName }}</span>
-        <span class="font-mono text-lg">
-          <ng-container *ngIf="revealed; else status">
-            {{ voteInfo.value }}
-          </ng-container>
-          <ng-template #status>
-            <span
-              [ngClass]="voteInfo.value ? 'text-green-600' : 'text-gray-400'"
-            >
-                {{ voteInfo.value==='-' ? "🕒" : "✅" }}
-            </span>
-          </ng-template>
-        </span>
-      </li>
-    </ul>
+  <div class="flex flex-row gap-4 w-full max-w-5xl justify-center">
+    <!-- Vote Summary -->
+    <div
+      *ngIf="revealed && (votes$ | async) as Votes"
+      [ngClass]="{ hidden: !getVoteFrequencies(Votes).length }"
+      class="w-1/2 bg-white p-6 rounded-lg shadow-md flex flex-col justify-between"
+    >
+      <h3 class="font-semibold text-lg mb-4">📊 Voting Summary</h3>
+      <ul class="divide-y">
+        <li class="py-1 flex justify-between font-bold">
+          <span>Story Points</span>
+          <span class="font-mono text-lg"># Votes</span>
+        </li>
+        <li
+          *ngFor="let item of getVoteFrequencies(Votes)"
+          [ngClass]="item.isHighest ? 'text-green-600 font-bold' : ''"
+          class="py-1 flex justify-between"
+        >
+          <span>{{ item.vote }}</span>
+          <span>{{ item.count }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Users List -->
+    <div
+      class="w-1/2 bg-white p-6 rounded-lg shadow-md flex flex-col justify-between"
+    >
+      <h3 class="font-semibold text-lg mb-4">🧑‍🤝‍🧑 Users in Session</h3>
+      <ul class="space-y-2" *ngIf="votes$ | async as Votes">
+        <li *ngFor="let voteInfo of Votes" class="flex justify-between">
+          <span>{{ voteInfo.userName }}</span>
+          <span class="font-mono text-lg">
+            <ng-container *ngIf="revealed; else status">
+              {{ voteInfo.value }}
+            </ng-container>
+            <ng-template #status>
+              <span
+                [ngClass]="voteInfo.value ? 'text-green-600' : 'text-gray-400'"
+              >
+                {{ voteInfo.value === "-" ? "🕒" : "✅" }}
+              </span>
+            </ng-template>
+          </span>
+        </li>
+      </ul>
+    </div>
   </div>
 
   <!-- Vote Buttons -->

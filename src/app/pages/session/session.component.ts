@@ -42,6 +42,7 @@ export class SessionComponent implements OnInit {
   }
 
   clearVotes() {
+    this.votes$.pipe(tap((data) => console.log(data))).subscribe();
     this.sessionService.clearVotes();
   }
 
