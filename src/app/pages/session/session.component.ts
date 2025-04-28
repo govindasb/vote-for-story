@@ -14,6 +14,7 @@ import { VoteFrequency } from 'src/app/types/vote-frequency';
 export class SessionComponent implements OnInit {
   sessionId: string = '';
   voteValues = ['0', '1/2', '1', '2', '3', '5', '8', '13', '22', '100'];
+  isLinkCopied = false;
 
   userName = '';
   users: string[] = [];
@@ -95,7 +96,10 @@ export class SessionComponent implements OnInit {
 
   copyShareLink() {
     navigator.clipboard.writeText(this.sessionSharableLink()).then(() => {
-      alert('Session link copied to clipboard! ✅');
+      this.isLinkCopied = true;
+      setTimeout(() => {
+        this.isLinkCopied = false;
+      }, 5000); // 5 seconds toast visibility
     }).catch((err) => {
       console.error('Could not copy link: ', err);
     });
