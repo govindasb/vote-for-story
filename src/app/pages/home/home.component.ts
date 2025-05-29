@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SessionService } from 'src/app/services/session.service';
+import { SessionPermission } from 'src/app/types/session-permission.enum';
 
 @Component({
   selector: 'app-home',
@@ -26,6 +27,7 @@ export class HomeComponent {
     const newSessionId = this.generateSessionId();
     this.sessionService.setSessionId(newSessionId);
     this.sessionService.setUserName(this.name);
+    this.sessionService.setPermissions(SessionPermission.ADMIN);
     this.sessionService.setSessionTitle('');
     this.router.navigate(['/session', newSessionId]);
   }

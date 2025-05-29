@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs';
+import { POKER_CARD_IMAGES_AND_VALUES } from 'src/app/constants/poker-card-images-and-values';
 import { API_URL } from 'src/app/constants/urls';
 import { SessionService } from 'src/app/services/session.service';
+import { SessionPermission } from 'src/app/types/session-permission.enum';
 import { Vote } from 'src/app/types/vote';
 import { VoteFrequency } from 'src/app/types/vote-frequency';
 
@@ -15,8 +17,10 @@ export class SessionComponent implements OnInit {
   sessionId: string = '';
   voteValues = ['0', '1/2', '1', '2', '3', '5', '8', '13', '22', '100'];
   isLinkCopied = false;
-
+  pokerCards = POKER_CARD_IMAGES_AND_VALUES;
   userName = '';
+  adminPermission = SessionPermission.ADMIN;
+  permission!: SessionPermission;
   users: string[] = [];
   votes$ = this.sessionService.votes$;
   revealed = false;
@@ -34,11 +38,14 @@ export class SessionComponent implements OnInit {
     this.sessionService.setSessionId(this.sessionId);
     this.sessionService.userName$.subscribe((name) => (this.userName = name));
     this.sessionService.revealed$.subscribe((flag) => (this.revealed = flag));
+    this.sessionService.userPermission$.subscribe(
+      (permission) => (this.permission = permission)
+    );
     this.sessionId = this.route.snapshot.paramMap.get('id') || '';
     this.sessionEnded$.subscribe((ended) => {
       if (ended) {
         this.sessionEnded = true;
-  
+
         // Auto-redirect after 1 minute
         setTimeout(() => {
           this.router.navigate(['/']);
@@ -47,8 +54,13 @@ export class SessionComponent implements OnInit {
     });
   }
 
-  vote(value: string) {
-    this.sessionService.castVote(this.userName, value);
+  vote(value: number) {
+    this.pokerCards.map((card) => {
+      if (card.value === value) {
+        card.isSelected = true;
+      }
+    });
+    this.sessionService.castVote(this.userName, value.toString());
   }
 
   showVotes() {
@@ -90,18 +102,21 @@ export class SessionComponent implements OnInit {
     this.router.navigate([path]);
   }
 
-  sessionSharableLink(): string{
+  sessionSharableLink(): string {
     return `${this.baseUrl}/session/${this.sessionId}/join`;
   }
 
   copyShareLink() {
-    navigator.clipboard.writeText(this.sessionSharableLink()).then(() => {
-      this.isLinkCopied = true;
-      setTimeout(() => {
-        this.isLinkCopied = false;
-      }, 5000); // 5 seconds toast visibility
-    }).catch((err) => {
-      console.error('Could not copy link: ', err);
-    });
+    navigator.clipboard
+      .writeText(this.sessionSharableLink())
+      .then(() => {
+        this.isLinkCopied = true;
+        setTimeout(() => {
+          this.isLinkCopied = false;
+        }, 5000); // 5 seconds toast visibility
+      })
+      .catch((err) => {
+        console.error('Could not copy link: ', err);
+      });
   }
 }

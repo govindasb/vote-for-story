@@ -4,6 +4,7 @@ import { doc, setDoc, getDoc, updateDoc, onSnapshot, deleteDoc } from 'firebase/
 import { db } from '../../firebase-config';
 import { SessionData } from '../types/session-data';
 import { Vote } from '../types/vote';
+import { SessionPermission } from '../types/session-permission.enum';
 @Injectable({
   providedIn: 'root',
 })
@@ -11,6 +12,7 @@ export class SessionService {
   private sessionId: string = '';
   private sessionTitle: string = '';
   private userName = new BehaviorSubject<string>('');
+  private userPermission = new BehaviorSubject<SessionPermission>(SessionPermission.READ);
   private users = new BehaviorSubject<string[]>([]);
   private votes = new BehaviorSubject<Vote[]>([]);
   private revealed = new BehaviorSubject<boolean>(false);
@@ -19,6 +21,7 @@ export class SessionService {
 
   userName$ = this.userName.asObservable();
   users$ = this.users.asObservable();
+  userPermission$ = this.userPermission.asObservable();
   votes$ = this.votes.asObservable();
   revealed$ = this.revealed.asObservable();
   isSessionEnded$ = this.isSessionEnded.asObservable();
@@ -26,6 +29,10 @@ export class SessionService {
   setSessionId(id: string) {
     this.sessionId = id;
     this.startListening();
+  }
+
+  setPermissions(permission: SessionPermission) {
+    this.userPermission.next(permission);
   }
 
   setUserName(name: string) {
