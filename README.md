@@ -35,3 +35,35 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 3. End Session upOn clicking
 
+4. 🧍‍♂️ Deduplicate Users by UUID
+
+Avoid adding same user multiple times on rejoin.
+
+Use uuid instead of userName in userProfiles and votes.
+
+5. 🔐 Enforce Admin Permissions (Backend)
+
+Add Firestore security rules:
+
+Only admins can call revealVotes, clearVotes, and deleteSession.
+
+6. 🧠 Link Votes with User Metadata
+
+Extend Vote type to include uuid and permission.
+
+Align Vote and UserProfile data more structurally.
+
+7. 📋 Show Users from userProfiles, Not Just Votes
+
+Display names, roles (👑 admin), and sort consistently from userProfiles.
+
+8. 🃏 Replace Vote Buttons with Card Images
+
+Use POKER_CARD_IMAGES_AND_VALUES array.
+
+Bind [src] to image, (click) to vote function.
+
+9. 📥 Fetch Session Title on Join
+
+Pull session title from Firestore in JoinSessionByLinkComponent on ngOnInit
+

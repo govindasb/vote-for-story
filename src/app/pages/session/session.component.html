@@ -14,10 +14,13 @@
     </button>
   </p>
 </div>
-<div class="p-6 flex flex-col items-center gap-6 min-h-screen bg-gray-50">
+<div
+  *ngIf="userProfile$ | async as profile"
+  class="p-6 flex flex-col items-center gap-6 min-h-screen bg-gray-50"
+>
   <h2 class="text-2xl font-semibold">Session: {{ sessionId }}</h2>
   <div class="text-lg">
-    Welcome, <span class="font-bold">{{ userName }}</span> 👋
+    Welcome, <span class="font-bold">{{ profile.name }}</span> 👋
   </div>
 
   <div class="flex flex-row gap-4 w-full max-w-5xl justify-center">
@@ -73,7 +76,7 @@
   <div class="flex flex-wrap gap-3 justify-center max-w-xl">
     <button
       *ngFor="let value of voteValues"
-      (click)="vote(value)"
+      (click)="vote(value, profile.name)"
       class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
     >
       {{ value }}
@@ -81,7 +84,7 @@
   </div>
 
   <!-- Action Buttons -->
-  <div class="flex gap-4 mt-4">
+  <div *ngIf="profile.permission === 'admin'" class="flex gap-4 mt-4">
     <button
       (click)="showVotes()"
       class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
@@ -125,7 +128,7 @@
         *ngIf="isLinkCopied"
         class="fixed top-4 right-4 bg-black text-white px-4 py-2 rounded-lg shadow-lg transition-all"
       >
-      📋 Session link copied!
+        📋 Session link copied!
       </div>
     </div>
   </div>

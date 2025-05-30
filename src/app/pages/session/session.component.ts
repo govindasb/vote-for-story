@@ -15,9 +15,7 @@ export class SessionComponent implements OnInit {
   sessionId: string = '';
   voteValues = ['0', '1/2', '1', '2', '3', '5', '8', '13', '22', '100'];
   isLinkCopied = false;
-
-  userName = '';
-  users: string[] = [];
+  userProfile$ = this.sessionService.userProfile$;
   votes$ = this.sessionService.votes$;
   revealed = false;
   sessionEnded = false;
@@ -32,7 +30,7 @@ export class SessionComponent implements OnInit {
   ngOnInit(): void {
     this.sessionId = this.route.snapshot.paramMap.get('id') || '';
     this.sessionService.setSessionId(this.sessionId);
-    this.sessionService.userName$.subscribe((name) => (this.userName = name));
+    // this.sessionService.userName$.subscribe((name) => (this.userName = name));
     this.sessionService.revealed$.subscribe((flag) => (this.revealed = flag));
     this.sessionId = this.route.snapshot.paramMap.get('id') || '';
     this.sessionEnded$.subscribe((ended) => {
@@ -47,8 +45,8 @@ export class SessionComponent implements OnInit {
     });
   }
 
-  vote(value: string) {
-    this.sessionService.castVote(this.userName, value);
+  vote(value: string, name: string) {
+    this.sessionService.castVote(name, value);
   }
 
   showVotes() {
