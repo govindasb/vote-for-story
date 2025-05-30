@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { API_URL } from 'src/app/constants/urls';
+import { voteOptions } from 'src/app/constants/vote-options';
 import { SessionService } from 'src/app/services/session.service';
 import { Vote } from 'src/app/types/vote';
 import { VoteFrequency } from 'src/app/types/vote-frequency';
@@ -13,7 +14,8 @@ import { VoteFrequency } from 'src/app/types/vote-frequency';
 })
 export class SessionComponent implements OnInit {
   sessionId: string = '';
-  voteValues = ['0', '1/2', '1', '2', '3', '5', '8', '13', '22', '100'];
+  // voteValues = ['0', '1/2', '1', '2', '3', '5', '8', '13', '22', '100'];
+  voteOptions = voteOptions;
   isLinkCopied = false;
   userProfile$ = this.sessionService.userProfile$;
   votes$ = this.sessionService.votes$;
@@ -30,13 +32,12 @@ export class SessionComponent implements OnInit {
   ngOnInit(): void {
     this.sessionId = this.route.snapshot.paramMap.get('id') || '';
     this.sessionService.setSessionId(this.sessionId);
-    // this.sessionService.userName$.subscribe((name) => (this.userName = name));
     this.sessionService.revealed$.subscribe((flag) => (this.revealed = flag));
     this.sessionId = this.route.snapshot.paramMap.get('id') || '';
     this.sessionEnded$.subscribe((ended) => {
       if (ended) {
         this.sessionEnded = true;
-  
+
         // Auto-redirect after 1 minute
         setTimeout(() => {
           this.router.navigate(['/']);
@@ -46,6 +47,11 @@ export class SessionComponent implements OnInit {
   }
 
   vote(value: string, name: string) {
+    this.voteOptions.forEach((option) => {
+      if (option.value === value) {
+        option.isSelected = true;
+      } else option.isSelected = false;
+    });
     this.sessionService.castVote(name, value);
   }
 
@@ -88,18 +94,21 @@ export class SessionComponent implements OnInit {
     this.router.navigate([path]);
   }
 
-  sessionSharableLink(): string{
+  sessionSharableLink(): string {
     return `${this.baseUrl}/session/${this.sessionId}/join`;
   }
 
   copyShareLink() {
-    navigator.clipboard.writeText(this.sessionSharableLink()).then(() => {
-      this.isLinkCopied = true;
-      setTimeout(() => {
-        this.isLinkCopied = false;
-      }, 5000); // 5 seconds toast visibility
-    }).catch((err) => {
-      console.error('Could not copy link: ', err);
-    });
+    navigator.clipboard
+      .writeText(this.sessionSharableLink())
+      .then(() => {
+        this.isLinkCopied = true;
+        setTimeout(() => {
+          this.isLinkCopied = false;
+        }, 5000); // 5 seconds toast visibility
+      })
+      .catch((err) => {
+        console.error('Could not copy link: ', err);
+      });
   }
 }

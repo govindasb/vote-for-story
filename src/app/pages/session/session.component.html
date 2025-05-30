@@ -75,11 +75,15 @@
   <!-- Vote Buttons -->
   <div class="flex flex-wrap gap-3 justify-center max-w-xl">
     <button
-      *ngFor="let value of voteValues"
-      (click)="vote(value, profile.name)"
-      class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+      *ngFor="let voteOption of voteOptions"
+      (click)="vote(voteOption.value, profile.name)"
+      [ngClass]="{
+      'bg-blue-500 hover:bg-blue-600': !voteOption.isSelected,
+      'bg-blue-900': voteOption.isSelected
+      }"
+      class="px-4 py-2 rounded text-white"
     >
-      {{ value }}
+      {{ voteOption.label }}
     </button>
   </div>
 
