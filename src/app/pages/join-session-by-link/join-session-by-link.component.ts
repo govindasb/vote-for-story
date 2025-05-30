@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SessionService } from 'src/app/services/session.service';
+import { generateGuid } from 'src/app/shared/helpers/generate-unique-id';
+import { AppPermissions } from 'src/app/types/app-permissions.enum';
+import { UserProfile } from 'src/app/types/user-profile';
 
 @Component({
   selector: 'app-join-session-by-link',
@@ -29,7 +32,13 @@ export class JoinSessionByLinkComponent {
   joinSession() {
     if (!this.name.trim() || !this.sessionId.trim()) return;
     this.sessionService.setSessionId(this.sessionId);
-    this.sessionService.setUserName(this.name);
+    const userProfile = {
+          name: this.name,
+          uuid: generateGuid(),
+          permission: AppPermissions.User
+    
+        } as UserProfile;
+    this.sessionService.setUserName(this.name, userProfile);
     this.router.navigate(['/session', this.sessionId]);
   }
 }
